@@ -18,7 +18,7 @@ def ImprintedWeights(channel, nclasses, feature_extractor_model = None, fc_model
   results = resnet101(inputs);
   results = tf.keras.layers.Lambda(lambda x: tf.image.resize(x[0], (tf.shape(x[1])[1], tf.shape(x[1])[2]), method = tf.image.ResizeMethod.BILINEAR))([results, inputs]);
   results = tf.keras.layers.Lambda(lambda x: x / tf.maximum(tf.norm(x, axis = -1, keepdims = True), 1e-4), name = 'prototype')(results);
-  fc = tf.keras.layers.Conv2D(nclasses, kernel_size = (1,1), padding = 'same', activation = tf.keras.activations.softmax, name = 'full_conv');
+  fc = tf.keras.layers.Conv2D(nclasses, kernel_size = (1,1), padding = 'same', activation = tf.keras.activations.softmax, use_bias = False, kernel_constraint = tf.keras.constraints.UnitNorm(axis = 2), name = 'full_conv');
   if fc_model is not None:
     fc.load_weights(fc_model);
   results = fc(results);
