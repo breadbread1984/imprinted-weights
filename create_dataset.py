@@ -29,7 +29,7 @@ def parse_function(serialized_example):
   label = tf.sparse.to_dense(feature['label'], default_value = 0);
   label = tf.reshape(label, (shape[0], shape[1])); # label.shape = (h, w)
   comp = tf.concat([data, tf.expand_dims(label, axis = -1)], axis = -1); # comp.shape = (h, w, 3 + 1)
-  comp = tf.image.resize(comp, (256,256), method = tf.image.ResizeMethod.BILINEAR); # comp.shape = (256, 256, 3+1)
+  comp = tf.image.resize(comp, (256, 256, comp.shape[-1]), method = tf.image.ResizeMethod.BILINEAR); # comp.shape = (256, 256, 3+1)
   comp = tf.image.random_crop(comp, (224,224)); # comp.shape = (224, 224, 3+1)
   data = comp[...,:-1] / (255 / 2) - 1; # data.shape = (224, 224, 3)
   label = comp[...,-1]; # label.shape = (224, 224)
