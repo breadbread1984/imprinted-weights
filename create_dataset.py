@@ -29,9 +29,9 @@ def parse_function(serialized_example):
   label = tf.sparse.to_dense(feature['label'], default_value = 0);
   label = tf.reshape(label, (shape[0], shape[1])); # label.shape = (h, w)
   data = tf.image.resize(tf.expand_dims(data, axis = 0), (256, 256), method = tf.image.ResizeMethod.BILINEAR); # data.shape = (1, 256, 256, 3)
-  label = tf.image.resize(tf.expand_dims(label, axis = 0), (256, 256), method = tf.image.ResizeMethod.NEAREST_NEIGHBOR); # label.shape = (1, 256, 256)
-  comp = tf.squeeze(tf.concat([data, tf.expand_dims(label, axis = -1)], axis = -1), axis = 0); # comp.shape = (256, 256, 3 + 1)
-  comp = tf.image.random_crop(comp, (224, 224, tf.shape(comp)[-1])); # comp.shape = (224, 224, 3 + 1)
+  label = tf.image.resize(tf.reshape(label, (1, shape[0], shape[1], 1)), (256, 256), method = tf.image.ResizeMethod.NEAREST_NEIGHBOR); # label.shape = (1, 256, 256, 1)
+  comp = tf.concat([data, label], axis = -1); # comp.shape = (1, 256, 256, 3 + 1)
+  comp = tf.squeeze(tf.image.random_crop(comp, (224, 224, tf.shape(comp)[-1])), axis = 0); # comp.shape = (224, 224, 3 + 1)
   data = comp[...,:-1] / (255 / 2) - 1; # data.shape = (224, 224, 3)
   label = comp[...,-1]; # label.shape = (224, 224)
   label = tf.clip_by_value(tf.math.round(label), 0, 80); # label.shape = (224, 224)
